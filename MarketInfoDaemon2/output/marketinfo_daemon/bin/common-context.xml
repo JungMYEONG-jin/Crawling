@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
+http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd"
+	default-autowire="byName">
+
+	<bean id="marketProperty" class="com.shinhan.market.property.MarketProperty"
+		scope="prototype">
+		<property name="daemon_code">
+			<value>${daemon_code}</value>
+		</property>
+		<property name="output_xml_path">
+			<value>/nbsdata2/mbb/marketinfo/</value>
+		</property>
+		<property name="output_xml_file_name">
+			<value>${output_xml_file_name}</value>
+		</property>
+	</bean>
+
+	<bean id="daemon" class="com.shinhan.market.daemon.MarketDaemon"
+		scope="prototype">
+		<property name="marketProperty">
+			<ref bean="marketProperty" />
+		</property>
+	</bean>
+
+	<bean id="DBManager" class="com.shinhan.market.daemon.service.MarketService"
+		scope="prototype">
+		<property name="commSqlBean">
+			<ref bean="commSqlBean" />
+		</property>
+		<property name="transactionTemplate">
+			<ref bean="transactionTemplate" />
+		</property>
+		<property name="simpleJdbcTemplate">
+			<ref bean="simpleJdbcTemplate" />
+		</property>
+	</bean>
+	<!-- <property name="marketProperty"><ref bean="marketProperty"/></property> -->
+
+	<!-- System/DB Setting -->
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:market.properties</value>
+			</list>
+		</property>
+	</bean>
+
+
+
+
+
+	<bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate"> 
+		<property name="transactionManager"> <ref bean="transactionManager" /> </property> 
+		</bean> <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager"> 
+		<property name="dataSource"> <ref bean="dataSource_mssql_push" /> </property> 
+		</bean> <bean id="simpleJdbcTemplate" class="org.springframework.jdbc.core.simple.SimpleJdbcTemplate"> 
+		<constructor-arg> <ref bean="dataSource_mssql_push" /> </constructor-arg> 
+		</bean> <bean id="dataSource_mssql_push" class="org.apache.commons.dbcp.BasicDataSource"> 
+		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" 
+		/> <property name="url" value="${oracle_db_url}" /> <property name="username" 
+		value="${oracle_username}" /> <property name="password" value="${oracle_password}" 
+		/> <property name="maxActive" value="10" /> <property name="maxIdle" value="20" 
+		/> <property name="initialSize" value="10" /> </bean>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 	<bean id="transactionTemplate"
+		class="org.springframework.transaction.support.TransactionTemplate">
+		<property name="transactionManager">
+			<ref bean="transactionManager" />
+		</property>
+	</bean>
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource">
+			<ref bean="dataSource_JNDI" />
+		</property>
+	</bean>
+	<bean id="simpleJdbcTemplate" class="org.springframework.jdbc.core.simple.SimpleJdbcTemplate">
+		<constructor-arg>
+			<ref bean="dataSource_JNDI" />
+		</constructor-arg>
+	</bean>
+	<bean id="dataSource_JNDI" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="pushSMTPool" />
+		<property name="jndiTemplate" ref="jndiTemplate" />
+	</bean>
+	<bean id="jndiTemplate" class="org.springframework.jndi.JndiTemplate">
+		<property name="environment">
+			<props>
+				<prop key="java.naming.factory.initial">weblogic.jndi.WLInitialContextFactory</prop>
+				<prop key="java.naming.provider.url">t3://192.168.155.215:45600</prop>
+			</props>
+		</property>
+	</bean> -->
+	
+	
+	
+	
+	
+	
+	
+	
+	<bean id="commSqlBean" class="com.shinhan.market.util.ControllerPropertyBean">
+		<property name="props">
+			<map>
+				<entry key="GET_PROPERTY_INFO">
+					<value>
+						SELECT * FROM MBM_MARKET_PROPERTY
+						WHERE ROWNUM = 1
+						ORDER BY REG_DT
+					</value>
+				</entry>
+
+				<entry key="INSERT_SEND_INFO">
+					<value>
+						INSERT INTO MBM_MARKET_SEND_INFO
+						(
+						SEQ,
+						APP_ID,
+						SEND_STATUS,
+						ERROR_MSG,
+						REQ_USER_ID,
+						REG_DT)
+						VALUES
+						(
+						MBM_MK_SEND_INFO_SEQ.NEXTVAL
+						:APP_ID,
+						:SEND_STATUS,
+						:ERROR_MSG,
+						:REQ_USER_ID,
+						TO_CHAR(SYSDATE,'yyyymmddhh24miss')
+						)
+					</value>
+				</entry>
+
+				<entry key="INSERT_MARKET_SEND_HISTORY">
+					<value>
+						INSERT INTO MBM_MARKET_SEND_HISTORY
+						(
+						SEQ,
+						APP_ID,
+						SEND_STATUS,
+						ERROR_MSG,
+						REQ_USER_ID,
+						REG_DT)
+						VALUES
+						(
+						MBM_MK_SEND_HISTORY_SEQ.NEXTVAL
+						:APP_ID,
+						:SEND_STATUS,
+						:ERROR_MSG,
+						:REQ_USER_ID,
+						:REG_DT
+						)
+					</value>
+				</entry>
+
+				<!-- <entry key="GET_SEND_INFO_LIST"> <value> SELECT APP_ID, SEND_STATUS, 
+					REQ_USER_ID, REG_DT FROM MBM_MARKET_SEND_INFO </value> </entry> -->
+
+				<entry key="GET_SEND_INFO_LIST">
+					<value>
+						SELECT
+						s.SEQ,
+						m.APP_ID,
+						m.APP_PACKAGE,
+						m.OS_TYPE,
+						m.STORE_URL,
+						m.TITLE_NODE,
+						m.VERSION_NODE,
+						m.UPDATE_NODE,
+						s.SEND_STATUS,
+						s.REQ_USER_ID,
+						s.REG_DT,
+						m.ETC3_NODE AS METHOD_TYPE
+						
+						FROM MBM_MARKET_INFO m ,
+						MBM_MARKET_SEND_INFO s
+						WHERE
+						s.APP_ID = m.APP_ID
+						ORDER BY s.SEQ
+					</value>
+				</entry>
+
+				<entry key="INSERT_MARKET_SEND_INFO_PERIOD">
+					<value>
+						INSERT INTO MBM_MARKET_SEND_INFO
+						(
+						SEQ,
+						APP_ID,
+						SEND_STATUS,
+						ERROR_MSG,
+						REQ_USER_ID,
+						REG_DT
+						)
+						(
+						SELECT
+						MBM_MK_SEND_INFO_SEQ.NEXTVAL,
+						APP_ID,
+						'0',
+						'',
+						'99999999',
+						TO_CHAR(SYSDATE,'yyyymmddhh24miss')
+						FROM MBM_MARKET_INFO
+						)
+					</value>
+				</entry>
+
+				<entry key="INSERT_MARKET_SEND_INFO_HIS_ARRAY">
+					<value>
+						INSERT INTO MBM_MARKET_SEND_HISTORY
+						(
+						SEQ,
+						APP_ID,
+						SEND_STATUS,
+						ERROR_MSG,
+						REQ_USER_ID,
+						REG_DT
+						)
+						(
+						SELECT
+						SEQ,
+						APP_ID,
+						SEND_STATUS,
+						ERROR_MSG,
+						REQ_USER_ID,
+						REG_DT
+						FROM MBM_MARKET_SEND_INFO
+						WHERE SEQ IN
+					</value>
+				</entry>
+
+				<entry key="DELETE_MARKET_SEND_INFO_ARRAY">
+					<value>
+						DELETE FROM MBM_MARKET_SEND_INFO
+						WHERE SEQ IN
+					</value>
+				</entry>
+
+				<entry key="UPDATE_MARKET_SEND_INFO">
+					<value>
+						UPDATE
+						MBM_MARKET_SEND_INFO
+						SET
+						SEND_STATUS = :SEND_STATUS,
+						ERROR_MSG = :ERROR_MSG
+						WHERE
+						SEQ = :SEQ
+					</value>
+				</entry>
+
+				<entry key="INSERT_MARKET_SEND_INFO_HISTORY">
+					<value>
+						INSERT INTO MBM_MARKET_SEND_HISTORY
+						( APP_ID, SEND_STATUS,
+						ERROR_MSG, REQ_USER_ID, REG_DT
+						)
+						(
+						SELECT APP_ID, SEND_STATUS,
+						ERROR_MSG, REQ_USER_ID, REG_DT
+						FROM MBM_MARKET_SEND_INFO
+						WHERE
+						SEND_SEQ IN (arraySeq)
+						)
+					</value>
+				</entry>
+
+
+				<entry key="TEST_INSERT_MARKET_INFO_LIST_IOS">
+					<value>
+						INSERT INTO MBM_MARKET_INFO(
+						SEQ,
+						APP_ID,
+						APP_PACKAGE,
+						OS_TYPE,
+						STORE_URL,
+						TITLE_NODE,
+						VERSION_NODE,
+						UPDATE_NODE,
+						REG_DT,
+						UPT_DT
+						)
+						VALUES (
+						MBM_MK_INFO_SEQ.NEXTVAL,
+						:APP_ID,
+						:APP_PACKAGE,
+						'2',
+						'https://itunes.apple.com/kr/app/id',
+						'div#title div.left h1',
+						'div#left-stack div ul li span[itemprop=softwareVersion]',
+						'div#left-stack div ul li.release-date
+						span[itemprop=datePublished]',
+						TO_CHAR(SYSDATE,'yyyymmddhh24miss'),
+						TO_CHAR(SYSDATE,'yyyymmddhh24miss')
+						)
+					</value>
+				</entry>
+				<entry key="TEST_INSERT_MARKET_INFO_LIST">
+					<value>
+						INSERT INTO MBM_MARKET_INFO(
+						SEQ,
+						APP_ID,
+						APP_PACKAGE,
+						OS_TYPE,
+						STORE_URL,
+						TITLE_NODE,
+						VERSION_NODE,
+						UPDATE_NODE,
+						REG_DT,
+						UPT_DT
+						)
+						VALUES (
+						MBM_MK_INFO_SEQ.NEXTVAL,
+						:APP_ID,
+						:APP_PACKAGE,
+						'1',
+						'https://play.google.com/store/apps/details?id=',
+						'div.id-app-title',
+						'div.details-section-contents div.meta-info
+						div[itemprop=softwareVersion]',
+						'div.details-section-contents
+						div.meta-info
+						div[itemprop=datePublished]',
+						TO_CHAR(SYSDATE,'yyyymmddhh24miss'),
+						TO_CHAR(SYSDATE,'yyyymmddhh24miss')
+						)
+					</value>
+				</entry>
+			</map>
+		</property>
+	</bean>
+</beans>
+
+
+

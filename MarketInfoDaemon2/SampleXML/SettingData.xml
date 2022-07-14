@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<items>
+	<item>
+		<setting_time_list>
+			<time_info>
+				<checktime>070000</checktime>
+			</time_info>
+			<time_info>
+				<checktime>150000</checktime>
+			</time_info>
+		</setting_time_list>
+	</item>
+</items>

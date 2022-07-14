@@ -1,0 +1,49 @@
+<project name="comm_server" default="jar.create" basedir=".">
+	<!-- =================== CreateJar =================== -->
+	<target name="jar.create" depends="">
+    <echo> marketinfo_daemon.all files jar gen' </echo>
+		<!-- Create application JAR file -->
+		<delete dir="${basedir}/output/marketinfo_daemon/lib"/>
+		<mkdir dir="${basedir}/output/marketinfo_daemon/lib"/>
+		<delete file="${basedir}/bin/log4j.properties"/>
+		<delete file="${basedir}/bin/push.properties"/>
+		<delete file="${basedir}/bin/pushcommon-context.xml"/>
+		<delete file="${basedir}/bin/market_daemon_start.sh"/>
+		<delete file="${basedir}/bin/market_daemon_stop.sh"/>
+	    <jar jarfile="${basedir}/output/marketinfo_daemon/lib/marketinfo_daemon.jar" basedir="${basedir}/bin/">
+	    	<manifest>
+      			<attribute name="Main-Class" value="com.shinhan.market.daemon.DaemonStarter"/>
+				<attribute name="Class-Path" value="./ spring-aop-3.1.1.RELEASE.jar spring-asm-3.1.1.RELEASE.jar spring-beans-3.1.1.RELEASE.jar spring-context-3.1.1.RELEASE.jar spring-context-support-3.1.1.RELEASE.jar spring-core-3.1.1.RELEASE.jar spring-expression-3.1.1.RELEASE.jar spring-jdbc-3.1.1.RELEASE.jar antlr-2.7.6.jar spring-tx-3.1.1.RELEASE.jar commons-httpclient-3.1.jar aopalliance-1.0.jar asm.jar c3p0-0.9.0.jar cglib-nodep-2.1_3.jar commons-attributes-api.jar commons-attributes-compiler.jar commons-beanutils.jar commons-collections.jar commons-dbcp.jar commons-digester.jar commons-fileupload.jar commons-io.jar commons-logging.jar commons-net-1.4.1.jar commons-pool.jar dbunit-2.1.jar dom4j-1.6.1.jar easymock.jar easymockclassextension.jar ehcache-1.2.3.jar hibernate3.jar hibernate-annotations.jar hsqldb.jar jakarta-oro-2.0.8.jar jaxen-1.1-beta-6.jar jfreechart-0.9.21.jar jmock-cglib-1.2.0.jar jmock-core-1.2.0.jar jmxri.jar jmxtools.jar jstl.jar jta.jar junit-4.4.jar jxl.jar jzlib.jar ojdbc14.jar osaf.jar persistence.jar poi-2.5.1.jar slf4j-api-1.4.2.jar spring.jar spring-aop.jar spring-beans.jar spring-context.jar spring-context-support.jar spring-core.jar spring-hibernate3.jar spring-jdbc.jar spring-jms.jar spring-orm.jar spring-test.jar spring-tx.jar spring-web.jar spring-webmvc.jar spring-webmvc-portlet.jar spring-webmvc-struts.jar standard.jar log4j-1.2.11.jar sqlite-jdbc-3.7.2.jar gcm-server.jar json_simple-1.1.jar commons-io-2.0.1.jar commons-lang-2.5.jar bcprov-jdk15-146.jar JavaPNS_2.2.jar mina-core-1.1.7-sources.jar mina-core-1.1.7.jar mina-filter-codec-netty-1.1.7-sources.jar mina-filter-codec-netty-1.1.7.jar mina-filter-compression-1.1.7-sources.jar mina-filter-compression-1.1.7.jar mina-filter-ssl-1.1.7-sources.jar mina-filter-ssl-1.1.7.jar mina-integration-jmx-1.1.7-sources.jar mina-integration-jmx-1.1.7.jar mina-integration-spring-1.1.7-sources.jar mina-integration-spring-1.1.7.jar NetComponents.jar slf4j-jdk14-1.4.2.jar slf4j-log4j12-1.4.2.jar mysql-connector-java-5.1.22-bin.jar json-simple-1.1.1.jar ojdbc14-10.2.0.4.0.jar sqljdbc4.jar jta-1.1.jar jasypt-1.9.0.jar jasypt-spring3-1.9.0.jar commons-beanutils-1.8.3.jar commons-collections-3.2.jar commons-lang-2.5.jar ezmorph-1.0.6.jar json-lib-2.3-jdk15.jar axis-1.4.jar httpclient-4.2.4.jar httpcore-4.2.4.jar jsoup-1.10.3.jar commons-dbcp-1.4.jar"/>
+			</manifest>
+	    </jar>
+		<echo> copy </echo>
+		<!--인증서-->
+		
+		
+		<copy todir="${basedir}/output/marketinfo_daemon/lib">
+			<fileset dir="${basedir}/lib"/>
+		</copy>
+	
+		<!--common-->
+		<delete dir="${basedir}/output/marketinfo_daemon/bin"/>
+		<mkdir dir="${basedir}/output/marketinfo_daemon/bin"/>
+		<copy todir="${basedir}/output/marketinfo_daemon/bin" file="${basedir}/config/log4j.properties"/>
+		<copy todir="${basedir}/output/marketinfo_daemon/bin" file="${basedir}/config/market.properties"/>
+		<copy todir="${basedir}/output/marketinfo_daemon/bin" file="${basedir}/config/market_real.properties"/>
+		<copy todir="${basedir}/output/marketinfo_daemon/bin" file="${basedir}/config/common-context.xml"/>
+		<copy todir="${basedir}/output/marketinfo_daemon/bin" file="${basedir}/config/common-context-real-1p.xml"/>
+		<copy todir="${basedir}/output/marketinfo_daemon/bin" file="${basedir}/config/common-context-real-2p.xml"/>
+		<copy todir="${basedir}/output/marketinfo_daemon/bin" file="${basedir}/config/market_daemon_start.sh"/>
+		<copy todir="${basedir}/output/marketinfo_daemon/bin" file="${basedir}/config/market_daemon_stop.sh"/>
+		
+		<copy todir="${basedir}/bin" file="${basedir}/config/log4j.properties"/>
+		<copy todir="${basedir}/bin" file="${basedir}/config/market.properties"/>
+		<copy todir="${basedir}/bin" file="${basedir}/config/market_real.properties"/>
+		<copy todir="${basedir}/bin" file="${basedir}/config/common-context.xml"/>
+		<copy todir="${basedir}/bin" file="${basedir}/config/common-context-real-1p.xml"/>
+		<copy todir="${basedir}/bin" file="${basedir}/config/common-context-real-2p.xml"/>
+		<copy todir="${basedir}/bin" file="${basedir}/config/market_daemon_start.sh"/>
+		<copy todir="${basedir}/bin" file="${basedir}/config/market_daemon_stop.sh"/>
+	</target>
+</project>
+
